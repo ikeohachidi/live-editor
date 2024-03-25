@@ -19,13 +19,15 @@ export default {
 .resizable-box-wrapper {
     display: flex;
     flex-grow: 1;
+    height: 100%;
     border: 1px solid green;
     overflow: hidden;
+    min-height: 300px;
 }
 
 .resizable-box {
     border: 1px solid red;
-    height: 300px;
+    height: 100%;
     width: 300px;
     /* position: relative; */
     flex-grow: 1;

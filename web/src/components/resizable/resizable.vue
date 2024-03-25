@@ -19,7 +19,6 @@ import {
 	ref,
 	VNode
 } from 'vue';
-import ResizableRow from '../resizable-row/resizable-row.vue';
 
 const slots = useSlots();
 
@@ -33,3 +32,15 @@ onMounted(() => {
 	}
 });
 </script>
+
+<style scoped>
+.resizable {
+	display: flex;
+	flex-direction: column;
+	height: 100vh;
+}
+
+.row {
+	flex-grow: 1;
+}
+</style>

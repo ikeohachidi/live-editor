@@ -86,11 +86,8 @@ onMounted(() => {
     margin: 0;
     border-bottom: 4px solid red;
     display: flex;
+    height: 100%;
     flex-wrap: nowrap;
-}
-
-.resizable-row:deep( > div) {
-    min-height: 300px;
 }
 
 .box {
