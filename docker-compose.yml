@@ -1,0 +1,18 @@
+name: "live-editor"
+services:
+  api:
+    image: "golang:1.22.1-alpine"
+    command: sh -c "go run main.go"
+    working_dir: /api
+    ports:
+      - 8000:8000
+    volumes:
+      - ./api:/api
+  web:
+    image: "node:alpine"
+    command: sh -c "npm ci && npm run dev"
+    working_dir: /web
+    ports:
+      - 8001:5173
+    volumes:
+      - ./web:/web
