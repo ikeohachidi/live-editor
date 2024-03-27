@@ -1,5 +1,5 @@
 <template>
-    <div class="resizable-row" ref="wrapper">
+    <div class="resizable-row" ref="wrapperEl">
         <template
             v-for="(box, index) in resizableBoxes"
             :key="`box-${index}`"
@@ -11,7 +11,9 @@
             ></component>
             <Resizer
                 v-if="index < (resizableBoxes.length - 1)"
-                @move="onResizeMove($event, index)"
+                :before-el="resizableBox[index]?.$el"
+                :after-el="resizableBox[index + 1]?.$el"
+                axis="y"
             ></Resizer>
         </template>
     </div>
@@ -31,45 +33,19 @@ import {
 	ref,
 	VNode,
 } from 'vue';
-import Resizer, { type Movement } from '../resizer/resizer.vue'
+import Resizer from '../resizer/resizer.vue'
 
 const slots = useSlots();
 
 const resizableBoxes = ref<VNode[]>([]);
 const resizableBox = ref<{$el: HTMLElement}[]>([]);
+const wrapperEl = ref<HTMLElement>()
 const boxSize = computed(() => {
-    if (!wrapper.value) {
+    if (!wrapperEl.value) {
         return 0;
     }
-    return wrapper.value?.getBoundingClientRect().width / resizableBoxes.value.length
+    return wrapperEl.value?.getBoundingClientRect().width / resizableBoxes.value.length
 })
-const wrapper = ref<HTMLElement>()
-
-const onResizeMove = (movement: Movement, index: number): void => {
-    const box = resizableBox.value[index];
-    const afterBox = resizableBox.value[index + 1];
-    if (!box) return;
-
-    const boxWidth = parseFloat(box.$el.style.width.replace('px', ''))
-    const afterBoxWidth = parseFloat(afterBox.$el.style.width.replace('px', ''))
-
-    console.log('change', movement.change, box.$el.style.width)
-    if (movement.direction === 'right') {
-        // increase the width of the box before the resizer
-        // this box before the resizer is going to be at this index
-        box.$el.style.width = `${boxWidth+movement.change}px`;
-        if (afterBox) {
-            afterBox.$el.style.width = `${afterBoxWidth-movement.change}px`;
-        }
-    }
-
-    if (movement.direction === 'left') {
-        box.$el.style.width = `${boxWidth-movement.change}px`;
-        if (afterBox) {
-            afterBox.$el.style.width = `${afterBoxWidth+movement.change}px`;
-        }
-    }
-}
 
 onMounted(() => {
 	if(slots && slots.default) {
@@ -85,12 +61,7 @@ onMounted(() => {
     padding: 0;
     margin: 0;
     display: flex;
-    height: 100%;
     flex-wrap: nowrap;
-}
-
-.box {
-    display: flex;
-    flex-grow: 1;
+    overflow: hidden;
 }
 </style>

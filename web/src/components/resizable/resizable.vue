@@ -1,28 +1,46 @@
 <template>
-	<div class="resizable">
-		<div
+	<div class="resizable" ref="wrapperEl">
+		<template
 			v-for="(row, index) in resizableRows"
 			:key="`row-${index}`"
 			class="row"
 		>
 			<component
 				:is="row"
+				ref="resizableRow"
+                :style="{ height: `${boxSize}px`}"
 			></component>
-		</div>
+			<Resizer
+				v-if="index < (resizableRows.length - 1)"
+				:before-el="resizableRow[index]?.$el"
+				:after-el="resizableRow[index + 1]?.$el"
+				axis="x"
+			></Resizer>
+		</template>
 	</div>
 </template>
 
 <script setup lang="ts">
 import {
+	computed,
 	useSlots,
 	onMounted,
 	ref,
 	VNode
 } from 'vue';
+import Resizer from '../resizer/resizer.vue'
 
 const slots = useSlots();
 
 const resizableRows = ref<VNode[]>([]);
+const resizableRow = ref<{$el: HTMLElement}[]>([]);
+const wrapperEl = ref<HTMLElement>();
+const boxSize = computed(() => {
+    if (!wrapperEl.value) {
+        return 0;
+    }
+    return wrapperEl.value?.getBoundingClientRect().height / resizableRows.value.length
+})
 
 onMounted(() => {
 	if(slots && slots.default) {
