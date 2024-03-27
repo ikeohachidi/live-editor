@@ -84,7 +84,6 @@ onMounted(() => {
 .resizable-row {
     padding: 0;
     margin: 0;
-    border-bottom: 4px solid red;
     display: flex;
     height: 100%;
     flex-wrap: nowrap;

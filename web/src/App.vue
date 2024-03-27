@@ -16,6 +16,7 @@
 				<ResizableBox>
 					<iframe
 						:id="String(sessionId)"
+						class="live-preview"
 						:src="`http://localhost:8000/session/${sessionId}`"
 						style="width: 100%; height: 100%"
 					></iframe>
@@ -107,11 +108,14 @@ onMounted(async() => {
 
 <style scoped>
 .wrapper {
-	border: 5px solid blue;
 	display: flex;
 	justify-content: center;
 	align-items: center;
 	height: 100vh;
 	width: 100vw;
+}
+
+.live-preview {
+	border: none;
 }
 </style>

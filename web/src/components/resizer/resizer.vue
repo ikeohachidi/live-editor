@@ -60,7 +60,7 @@ onMounted(() => {
 .resizer {
     width: 18px;
     height: 100%;
-    background: blue;
+    background-color: transparent;
     cursor: col-resize;
     position: relative;
 }
