@@ -20,7 +20,6 @@ export default {
     display: flex;
     flex-grow: 1;
     height: 100%;
-    border-radius: 5px;
     overflow: hidden;
     min-height: 300px;
 }

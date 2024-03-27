@@ -6,7 +6,8 @@
 					<editor v-if="!isLoading" language="html" v-model="htmlContent"></editor>
 				</ResizableBox>
 				<ResizableBox>
-					<editor v-if="!isLoading" language="css" v-model="cssContent"></editor>
+					<p style="background: red">{{ styleLanguage }}</p>
+					<editor v-if="!isLoading" v-model:language="styleLanguage" v-model="cssContent"></editor>
 				</ResizableBox>
 				<ResizableBox>
 					<editor v-if="!isLoading" language="javascript" v-model="jsContent"></editor>
@@ -19,7 +20,6 @@
 							:id="String(sessionId)"
 							class="live-preview"
 							:src="`http://localhost:8000/session/${sessionId}`"
-							style="width: 100%; height: 100%"
 						></iframe>
 					</div>
 				</ResizableBox>
@@ -41,8 +41,9 @@ watch(htmlContent, (content: string) => {
 	runUpdate(content, 'html' as EditorLanguage)
 })
 const cssContent = ref('');
+const styleLanguage = ref<EditorLanguage>('css');
 watch(cssContent, (content: string) => {
-	runUpdate(content, 'css' as EditorLanguage)
+	runUpdate(content, styleLanguage.value)
 })
 const jsContent = ref('');
 watch(jsContent, (content: string) => {
@@ -119,9 +120,17 @@ onMounted(async() => {
 
 .live-preview {
 	border: none;
+	border: 1px solid red;
+	width: 100%;
+	height: 100%;
+	overflow: auto;
+	position: absolute;
+	top: 0;
+	left: 0;
 }
 
 .live-preview-frame {
+	position: relative;
 	background-color: #fff;
 	height: 100%;
 }

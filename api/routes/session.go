@@ -6,7 +6,9 @@ import (
 	"io"
 	"net/http"
 	"os"
+	"os/exec"
 	"path/filepath"
+	"strings"
 
 	log "github.com/sirupsen/logrus"
 )
@@ -58,6 +60,26 @@ func UpdateSession(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	if body.Lang == "scss" || body.Lang == "sass" {
+		// compile sass to css
+		body.Lang = "css"
+
+		filePath := fmt.Sprintf("./session_files/%[1]v/%[1]v.%[2]v", sessionId, body.Lang)
+
+		cmd := exec.Command("sass", "--stdin", "--no-source-map", "--no-error-css", filePath)
+
+		cmd.Stdin = strings.NewReader(body.Content)
+
+		err = cmd.Run()
+		if err != nil {
+			log.Errorf("error running sass build command: %v", err)
+			w.WriteHeader(http.StatusInternalServerError)
+			return
+		}
+
+		w.WriteHeader(http.StatusOK)
+	}
+
 	filePath := fmt.Sprintf("./session_files/%[1]v/%[1]v.%[2]v", sessionId, body.Lang)
 
 	err = os.WriteFile(filePath, []byte(body.Content), 0777)
@@ -66,6 +88,8 @@ func UpdateSession(w http.ResponseWriter, r *http.Request) {
 		w.WriteHeader(http.StatusInternalServerError)
 		return
 	}
+
+	w.WriteHeader(http.StatusOK)
 }
 
 const htmlTemplate = `

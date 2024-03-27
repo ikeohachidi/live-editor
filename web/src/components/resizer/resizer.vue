@@ -2,7 +2,6 @@
     <div
         :class="[axis, 'resizer']"
         @mousedown="onResizeMouseDown"
-        @mouseup="onResizeMouseUp"
     ></div>
 </template>
 
@@ -119,16 +118,22 @@ onMounted(() => {
 </script>
 <style scoped>
 .resizer {
-    width: 18px;
-    height: 100%;
     background-color: transparent;
-    cursor: col-resize;
     position: relative;
 
     &.x {
         width: 100%;
         height: 18px;
         cursor: row-resize;
+        border-top: 1px solid #404040;
+        border-bottom: 1px solid #404040;
+    }
+    &.y {
+        width: 18px;
+        height: 100%;
+        cursor: col-resize;
+        border-left: 1px solid #404040;
+        border-right: 1px solid #404040;
     }
 }
 </style>
