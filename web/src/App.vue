@@ -14,12 +14,14 @@
 			</ResizableRow>
 			<ResizableRow>
 				<ResizableBox>
-					<iframe
-						:id="String(sessionId)"
-						class="live-preview"
-						:src="`http://localhost:8000/session/${sessionId}`"
-						style="width: 100%; height: 100%"
-					></iframe>
+					<div class="live-preview-frame">
+						<iframe
+							:id="String(sessionId)"
+							class="live-preview"
+							:src="`http://localhost:8000/session/${sessionId}`"
+							style="width: 100%; height: 100%"
+						></iframe>
+					</div>
 				</ResizableBox>
 			</ResizableRow>
 		</Resizable>
@@ -117,5 +119,10 @@ onMounted(async() => {
 
 .live-preview {
 	border: none;
+}
+
+.live-preview-frame {
+	background-color: #fff;
+	height: 100%;
 }
 </style>
