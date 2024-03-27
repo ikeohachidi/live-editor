@@ -21,8 +21,8 @@ RUN wget https://go.dev/dl/go${GO_VERSION}.linux-amd64.tar.gz \
     && tar -C /usr/local -xzf go${GO_VERSION}.linux-amd64.tar.gz
 
 ENV PATH /usr/local/go/bin:$PATH
+ENV PATH $NVM_DIR/versions/node/v$NODE_VERSION/bin:$PATH
 
 EXPOSE 8000
-WORKDIR /app
-COPY . .
+WORKDIR /api
 CMD ["go", "run", "main.go"]
