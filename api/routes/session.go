@@ -73,7 +73,7 @@ func UpdateSession(w http.ResponseWriter, r *http.Request) {
 		// compile sass to css
 		body.Lang = "css"
 
-		filePath := fmt.Sprintf("/%v/%v.%v", folderPath, sessionId, body.Lang)
+		filePath := fmt.Sprintf("%v/%v.%v", folderPath, sessionId, body.Lang)
 
 		cmd := exec.Command("sass", "--stdin", "--no-source-map", "--no-error-css", filePath)
 
@@ -135,6 +135,7 @@ func FetchSession(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		log.Errorf("error reading file content: %v", err)
 		w.WriteHeader(http.StatusInternalServerError)
+		return
 	}
 
 	page := fmt.Sprintf(htmlTemplate, sessionId, string(fileContent))
@@ -211,7 +212,6 @@ func GetFile(w http.ResponseWriter, r *http.Request) {
 	filePath := fmt.Sprintf("./session_files/%v/%v", sessionId, fileParam)
 	file, err := os.OpenFile(filePath, os.O_RDONLY, 0777)
 	if err != nil {
-		log.Errorf("error reading file from storage: %v", err)
 		w.WriteHeader(http.StatusInternalServerError)
 		return
 	}
