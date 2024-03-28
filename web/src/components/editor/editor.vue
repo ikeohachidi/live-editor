@@ -13,8 +13,8 @@
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted } from 'vue';
-import { EditorState } from '@codemirror/state';
+import { ref, onMounted, watch } from 'vue';
+import { Compartment, EditorState, Extension } from '@codemirror/state';
 import { EditorView, basicSetup } from "codemirror"
 import { ViewUpdate } from '@codemirror/view';
 import { oneDark } from '@codemirror/theme-one-dark';
@@ -34,60 +34,64 @@ const emit = defineEmits<{
 	(e: 'update:language', value: EditorLanguage): void
 }>();
 
+let languages = new Compartment;
+let languageCache: {[language in EditorLanguage]?: Extension} = {};
+
+watch(() => props.language, async (lang) => {
+	const langExtensions: Extension[] = [];
+	const extension = languageCache[lang];
+
+	if (extension) {
+		langExtensions.push(extension);
+
+		editor.dispatch({
+			effects: languages.reconfigure(langExtensions)
+		});
+	}
+});
+
 const onEditorBoxClick = (): void => {
 	if (editor) {
 		editor.focus();
 	}
 }
 
-// const loadedLanguages: {[language in EditorLanguage]?: Extension} = {};
-
-// watch(() => props.language, (lang: EditorLanguage) => {
-// 	if (lang === 'sass') {
-// 		if (loadedLanguages.sass) {
-// 			editor.
-// 		}
-// 	}
-// });
-
 const changeLanguage = (language: EditorLanguage): void => {
 	emit('update:language', language);
 }
 
 onMounted(async() => {
-	const extensions = [basicSetup];
+	const extensions: Extension[] = [];
 
 	if (props.language === 'javascript') {
 		const { javascript } = await import("@codemirror/lang-javascript");
-		extensions.push(javascript());
+		languageCache.javascript = javascript();
 	}
 
 	if (props.language === 'html') {
 		const { html } = await import("@codemirror/lang-html");
-		// loadedLanguages.html = html();
-		extensions.push(html());
+		languageCache.javascript = html();
 	}
 
 	if (props.language === 'css') {
 		const { css } = await import("@codemirror/lang-css");
-		// const { sass } = await import("@codemirror/lang-sass");
-		// loadedLanguages.css = css();
-		// loadedLanguages.sass = sass();
-		extensions.push(css());
+		const { sass } = await import("@codemirror/lang-sass");
+		languageCache.css = css();
+		languageCache.sass = sass();
 	}
 
-	// Object.entries(loadedLanguages)
-	// 	.forEach(([_, extension]) => {
-	// 		if (extension) {
-	// 			extensions.push(extension);
-	// 		}
-	// 	})
-
+	Object.entries(languageCache)
+		.forEach(([_, extension]) => {
+			if (extension) {
+				extensions.push(extension);
+			}
+		});
 
 	let startState = EditorState.create({
 		doc: props.modelValue,
 		extensions: [
-			...extensions,
+			basicSetup,
+			languages.of(extensions),
 			EditorView.updateListener.of((view: ViewUpdate) => {
 				if (view.docChanged) {
 					const content = editor.state.doc.toString()
