@@ -3,14 +3,29 @@
 		<Resizable>
 			<ResizableRow>
 				<ResizableBox>
-					<editor v-if="!isLoading" language="html" v-model="htmlContent"></editor>
+					<CodeEditor
+						v-if="!isLoading"
+						:sessionId="sessionId"
+						v-model:content="htmlContent"
+						language="html"
+					/>
 				</ResizableBox>
 				<ResizableBox>
-					<p style="background: red">{{ styleLanguage }}</p>
-					<editor v-if="!isLoading" v-model:language="styleLanguage" v-model="cssContent"></editor>
+					<CodeEditor
+						v-if="!isLoading"
+						:sessionId="sessionId"
+						v-model:content="cssContent"
+						v-model:language="styleLanguage"
+						:languageList="styleLanguges"
+					/>
 				</ResizableBox>
 				<ResizableBox>
-					<editor v-if="!isLoading" language="javascript" v-model="jsContent"></editor>
+					<CodeEditor
+						v-if="!isLoading"
+						:sessionId="sessionId"
+						v-model:content="jsContent"
+						language="js"
+					/>
 				</ResizableBox>
 			</ResizableRow>
 			<ResizableRow>
@@ -29,52 +44,31 @@
 </template>
 
 <script setup lang="ts">
-import { onMounted, ref, watch } from 'vue';
+import { onMounted, ref } from 'vue';
 import Resizable from './components/resizable/resizable.vue';
 import ResizableRow from './components/resizable-row/resizable-row.vue';
 import ResizableBox from './components/resizable-box/resizable-box.vue';
-import Editor, { type EditorLanguage } from './components/editor/editor.vue';
-import { debounce } from './utils/debounce';
+import { type EditorLanguage } from './components/editor/editor.vue';
+import CodeEditor from './components/editor/code-editor/code-editor.vue';
 
 const htmlContent = ref('');
-watch(htmlContent, (content: string) => {
-	runUpdate(content, 'html' as EditorLanguage)
-})
 const cssContent = ref('');
-const styleLanguage = ref<EditorLanguage>('css');
-watch(cssContent, (content: string) => {
-	runUpdate(content, styleLanguage.value)
-})
 const jsContent = ref('');
-watch(jsContent, (content: string) => {
-	runUpdate(content, 'js' as EditorLanguage)
-})
+
+const styleLanguage = ref<EditorLanguage>('css');
+const styleLanguges: {label: string, value: EditorLanguage}[] = [
+	{
+		label: 'Sass',
+		value: 'sass'
+	},
+	{
+		label: 'Css',
+		value: 'css'
+	}
+];
 
 const sessionId = 1;
 const isLoading = ref(false);
-
-const updateContent = async(content: string, lang: EditorLanguage): Promise<void> => {
-	try {
-		const sessionId = 1;
-		await fetch(`http://localhost:8000/session/${sessionId}`, {
-			method: 'put',
-			mode: 'cors',
-			body: JSON.stringify({
-				lang,
-				content,
-			})
-		});
-
-		const iframeEl = document.getElementById(String(sessionId)) as HTMLIFrameElement;
-		if (iframeEl) {
-			iframeEl.src = iframeEl.src;
-		}
-	} catch(e) {
-		console.error(e)
-	}
-}
-
-const runUpdate = debounce(1000, updateContent)
 
 const getSessionContent = async (): Promise<void> => {
 	isLoading.value = true;

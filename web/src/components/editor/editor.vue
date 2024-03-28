@@ -1,13 +1,14 @@
 <template>
-	<div>
-		<button @click="changeLanguage('sass')" v-if="language === 'css'">Sass</button>
-		<button v-else-if="language === 'sass'" @click="changeLanguage('css')">Css</button>
-
+	<div class="editor-wrapper">
 		<div
 			class="editor"
 			ref="editorEl"
 			@click="onEditorBoxClick"
 		>
+		</div>
+
+		<div class="bottom">
+			<slot name="bottom"></slot>
 		</div>
 	</div>
 </template>
@@ -19,7 +20,7 @@ import { EditorView, basicSetup } from "codemirror"
 import { ViewUpdate } from '@codemirror/view';
 import { oneDark } from '@codemirror/theme-one-dark';
 
-export type EditorLanguage = 'css' | 'javascript' | 'html' | 'sass';
+export type EditorLanguage = 'css' | 'js' | 'html' | 'sass';
 
 const editorEl = ref<HTMLElement>();
 let editor: EditorView;
@@ -31,7 +32,6 @@ const props = defineProps<{
 
 const emit = defineEmits<{
 	(e: 'update:modelValue', value: string): void
-	(e: 'update:language', value: EditorLanguage): void
 }>();
 
 let languages = new Compartment;
@@ -56,21 +56,17 @@ const onEditorBoxClick = (): void => {
 	}
 }
 
-const changeLanguage = (language: EditorLanguage): void => {
-	emit('update:language', language);
-}
-
 onMounted(async() => {
 	const extensions: Extension[] = [];
 
-	if (props.language === 'javascript') {
+	if (props.language === 'js') {
 		const { javascript } = await import("@codemirror/lang-javascript");
-		languageCache.javascript = javascript();
+		languageCache.js = javascript();
 	}
 
 	if (props.language === 'html') {
 		const { html } = await import("@codemirror/lang-html");
-		languageCache.javascript = html();
+		languageCache.html = html();
 	}
 
 	if (props.language === 'css') {
@@ -110,8 +106,20 @@ onMounted(async() => {
 </script>
 
 <style scoped>
-.editor {
+.editor-wrapper {
+	display: flex;
+	flex-direction: column;
+	/* border: 1px solid red; */
 	height: 100%;
+}
+
+.editor {
 	background-color: #282c34;
+	flex-grow: 1;
+	overflow: auto;
+}
+
+.bottom {
+	margin-top: auto;
 }
 </style>
