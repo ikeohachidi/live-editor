@@ -2,11 +2,17 @@ package main
 
 import (
 	"net/http"
+	"time"
 
 	"github.com/ikeohachidi/live-editor/routes"
+	"github.com/ikeohachidi/live-editor/services"
 
 	log "github.com/sirupsen/logrus"
 )
+
+func init() {
+	go services.PruneStaleSessions(time.Hour * 1)
+}
 
 func main() {
 	router := http.NewServeMux()

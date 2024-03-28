@@ -9,6 +9,7 @@ import (
 	"os/exec"
 	"path/filepath"
 	"strings"
+	"time"
 
 	log "github.com/sirupsen/logrus"
 )
@@ -32,14 +33,15 @@ func StartSession(w http.ResponseWriter, r *http.Request) {
 		w.WriteHeader(http.StatusBadRequest)
 		return
 	}
-	file := fmt.Sprintf("./session_files/%v", sessionId)
+	folderPath := fmt.Sprintf("./session_files/%v", sessionId)
 
-	err := os.Mkdir(file, 0777)
+	err := os.Mkdir(folderPath, 0777)
 	if err != nil {
-		log.Errorf("error writing file: %v", err)
+		log.Errorf("error creating folder: %v", err)
 		w.WriteHeader(http.StatusInternalServerError)
 		return
 	}
+	writeMetadata(folderPath, Metadata{LastUpdated: time.Now()})
 }
 
 func UpdateSession(w http.ResponseWriter, r *http.Request) {
@@ -60,11 +62,13 @@ func UpdateSession(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	folderPath := fmt.Sprintf("./session_files/%v", sessionId)
+
 	if body.Lang == "scss" || body.Lang == "sass" {
 		// compile sass to css
 		body.Lang = "css"
 
-		filePath := fmt.Sprintf("./session_files/%[1]v/%[1]v.%[2]v", sessionId, body.Lang)
+		filePath := fmt.Sprintf("/%v/%v.%v", folderPath, sessionId, body.Lang)
 
 		cmd := exec.Command("sass", "--stdin", "--no-source-map", "--no-error-css", filePath)
 
@@ -76,10 +80,12 @@ func UpdateSession(w http.ResponseWriter, r *http.Request) {
 			w.WriteHeader(http.StatusInternalServerError)
 		}
 
+		writeMetadata(folderPath, Metadata{LastUpdated: time.Now()})
+
 		return
 	}
 
-	filePath := fmt.Sprintf("./session_files/%[1]v/%[1]v.%[2]v", sessionId, body.Lang)
+	filePath := fmt.Sprintf("/%v/%v.%v", folderPath, sessionId, body.Lang)
 
 	err = os.WriteFile(filePath, []byte(body.Content), 0777)
 	if err != nil {
