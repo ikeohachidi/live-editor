@@ -117,7 +117,6 @@ onMounted(async() => {
 
 .live-preview {
 	border: none;
-	border: 1px solid red;
 	width: 100%;
 	height: 100%;
 	overflow: auto;

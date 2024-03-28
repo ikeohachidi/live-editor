@@ -6,6 +6,7 @@
                     v-for="l in languageList"
                     :key="l.value"
                     @click="codeLanguage = l.value"
+                    :class="{active: codeLanguage === l.value}"
                 >
                     {{ l.label }}
                 </button>
@@ -57,6 +58,12 @@ watch(codeContent, (content: string) => {
 <style scoped>
 .language button {
 	margin: 5px 5px;
+    border: 1px solid transparent;
+    cursor: pointer;
+}
+
+.language button.active {
+    border: 1px solid #e6e6e6;
 }
 
 .language button:last-of-type {
