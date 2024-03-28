@@ -16,12 +16,12 @@ func init() {
 
 func main() {
 	router := http.NewServeMux()
-	router.HandleFunc("POST /session/{id}", routes.StartSession)
+	router.HandleFunc("POST /session", routes.StartSession)
 	router.HandleFunc("PUT /session/{id}", routes.UpdateSession)
-	router.HandleFunc("GET /session/{id}", routes.WriteContent)
+	router.HandleFunc("GET /session/{id}", routes.FetchSession)
 	router.HandleFunc("OPTIONS /session/{id}", routes.HandleOptionsRequest)
 
-	router.HandleFunc("GET /content/{sessionId}", routes.GetFileContent)
+	router.HandleFunc("GET /content/{sessionId}", routes.FetchSessionFiles)
 
 	router.HandleFunc("GET /f/{sessionId}/{file}", routes.GetFile)
 

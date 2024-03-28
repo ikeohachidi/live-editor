@@ -20,7 +20,7 @@ import Editor, { type EditorLanguage } from '../../editor/editor.vue';
 import { runUpdate } from '../../../http';
 
 const props = defineProps<{
-    sessionId: number,
+    sessionId: string,
     content: string,
     language: EditorLanguage,
     languageList?: {label: string, value: EditorLanguage}[]

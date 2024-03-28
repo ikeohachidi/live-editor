@@ -1,0 +1,1 @@
+export const sessionIdStorageKey = "live-editor-sessionid";

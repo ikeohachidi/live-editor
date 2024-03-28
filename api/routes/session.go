@@ -11,6 +11,7 @@ import (
 	"strings"
 	"time"
 
+	"github.com/google/uuid"
 	log "github.com/sirupsen/logrus"
 )
 
@@ -28,11 +29,8 @@ type SessionContent struct {
 func StartSession(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Access-Control-Allow-Origin", "*")
 
-	sessionId := r.PathValue("id")
-	if sessionId == "" {
-		w.WriteHeader(http.StatusBadRequest)
-		return
-	}
+	sessionId := uuid.New().String()
+
 	folderPath := fmt.Sprintf("./session_files/%v", sessionId)
 
 	err := os.Mkdir(folderPath, 0777)
@@ -42,6 +40,13 @@ func StartSession(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	writeMetadata(folderPath, Metadata{LastUpdated: time.Now()})
+
+	var newSession struct {
+		SessionId string `json:"sessionId"`
+	}
+	newSession.SessionId = sessionId
+
+	json.NewEncoder(w).Encode(newSession)
 }
 
 func UpdateSession(w http.ResponseWriter, r *http.Request) {
@@ -85,7 +90,7 @@ func UpdateSession(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	filePath := fmt.Sprintf("/%v/%v.%v", folderPath, sessionId, body.Lang)
+	filePath := fmt.Sprintf("%v/%v.%v", folderPath, sessionId, body.Lang)
 
 	err = os.WriteFile(filePath, []byte(body.Content), 0777)
 	if err != nil {
@@ -108,7 +113,7 @@ const htmlTemplate = `
 </html>
 `
 
-func WriteContent(w http.ResponseWriter, r *http.Request) {
+func FetchSession(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Access-Control-Allow-Origin", "*")
 
 	sessionId := r.PathValue("id")
@@ -124,6 +129,7 @@ func WriteContent(w http.ResponseWriter, r *http.Request) {
 		log.Errorf("error reading file from storage: %v", err)
 		w.WriteHeader(http.StatusInternalServerError)
 	}
+	defer file.Close()
 
 	fileContent, err := io.ReadAll(file)
 	if err != nil {
@@ -137,7 +143,7 @@ func WriteContent(w http.ResponseWriter, r *http.Request) {
 	w.Write([]byte(page))
 }
 
-func GetFileContent(w http.ResponseWriter, r *http.Request) {
+func FetchSessionFiles(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Access-Control-Allow-Origin", "*")
 
 	sessionId := r.PathValue("sessionId")
@@ -151,7 +157,7 @@ func GetFileContent(w http.ResponseWriter, r *http.Request) {
 	entries, err := os.ReadDir(folderPath)
 	if err != nil {
 		log.Errorf("error reading session directory: %v", err)
-		w.WriteHeader(http.StatusNoContent)
+		w.WriteHeader(http.StatusGone)
 		return
 	}
 
@@ -207,12 +213,15 @@ func GetFile(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		log.Errorf("error reading file from storage: %v", err)
 		w.WriteHeader(http.StatusInternalServerError)
+		return
 	}
+	defer file.Close()
 
 	fileContent, err := io.ReadAll(file)
 	if err != nil {
 		log.Errorf("error reading file content: %v", err)
 		w.WriteHeader(http.StatusInternalServerError)
+		return
 	}
 
 	extension := filepath.Ext(filePath)

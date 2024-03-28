@@ -50,6 +50,8 @@ import ResizableRow from './components/resizable-row/resizable-row.vue';
 import ResizableBox from './components/resizable-box/resizable-box.vue';
 import { type EditorLanguage } from './components/editor/editor.vue';
 import CodeEditor from './components/editor/code-editor/code-editor.vue';
+import { fetchSession, createNewSession } from './http';
+import { sessionIdStorageKey } from './http/constants';
 
 const htmlContent = ref('');
 const cssContent = ref('');
@@ -67,38 +69,39 @@ const styleLanguges: {label: string, value: EditorLanguage}[] = [
 	}
 ];
 
-const sessionId = 1;
+let sessionId: string;
 const isLoading = ref(false);
 
-const getSessionContent = async (): Promise<void> => {
-	isLoading.value = true;
-
-	try {
-		const res = await fetch(`http://localhost:8000/content/${sessionId}`, {
-			method: 'get',
-			mode: 'cors',
-		});
-		const data = await res.json();
-		htmlContent.value = data.html;
-		cssContent.value = data.css;
-		jsContent.value = data.js;
-
-		isLoading.value = false;
-	} catch(e) {
-		console.error(e);
-	}
-}
-
 onMounted(async() => {
+	isLoading.value = true;
+	sessionId = localStorage.getItem(sessionIdStorageKey) || '';
+
 	try {
-		getSessionContent();
-		await fetch(`http://localhost:8000/session/${sessionId}`, {
-			method: 'post',
-			mode: 'cors',
-		});
-		localStorage.setItem('editorId', String(sessionId));
+		if (sessionId) {
+			const { status, data } = await fetchSession(sessionId)
+			if (status === 410) {
+				const newSession = await createNewSession();
+				localStorage.setItem(sessionIdStorageKey, String(newSession.sessionId));
+				sessionId = newSession.sessionId;
+
+				return;
+			}
+
+			htmlContent.value = data.html;
+			cssContent.value = data.css;
+			jsContent.value = data.js;
+
+			return;
+		}
+
+		const newSession = await createNewSession();
+		localStorage.setItem(sessionIdStorageKey, String(newSession.sessionId));
+		sessionId = newSession.sessionId;
 	} catch(e) {
-		console.error(e)
+		// TODO: handle this properly
+		console.error(e);
+	} finally {
+		isLoading.value = false;
 	}
 })
 </script>
