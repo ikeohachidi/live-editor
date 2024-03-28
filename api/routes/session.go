@@ -74,10 +74,9 @@ func UpdateSession(w http.ResponseWriter, r *http.Request) {
 		if err != nil {
 			log.Errorf("error running sass build command: %v", err)
 			w.WriteHeader(http.StatusInternalServerError)
-			return
 		}
 
-		w.WriteHeader(http.StatusOK)
+		return
 	}
 
 	filePath := fmt.Sprintf("./session_files/%[1]v/%[1]v.%[2]v", sessionId, body.Lang)
@@ -88,8 +87,6 @@ func UpdateSession(w http.ResponseWriter, r *http.Request) {
 		w.WriteHeader(http.StatusInternalServerError)
 		return
 	}
-
-	w.WriteHeader(http.StatusOK)
 }
 
 const htmlTemplate = `
