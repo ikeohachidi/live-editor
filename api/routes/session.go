@@ -49,6 +49,23 @@ func StartSession(w http.ResponseWriter, r *http.Request) {
 	json.NewEncoder(w).Encode(newSession)
 }
 
+func processSass(session Session, sessionId string, folderPath string) error {
+	filePath := fmt.Sprintf("%v/%v.css", folderPath, sessionId)
+
+	cmd := exec.Command("sass", "--stdin", "--no-source-map", "--no-error-css", filePath)
+
+	cmd.Stdin = strings.NewReader(session.Content)
+
+	err := cmd.Run()
+	if err != nil {
+		return fmt.Errorf("error running sass build command: %v", err)
+	}
+
+	writeMetadata(folderPath, Metadata{LastUpdated: time.Now()})
+
+	return nil
+}
+
 func UpdateSession(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Access-Control-Allow-Origin", "*")
 
@@ -69,24 +86,16 @@ func UpdateSession(w http.ResponseWriter, r *http.Request) {
 
 	folderPath := fmt.Sprintf("./session_files/%v", sessionId)
 
-	if body.Lang == "scss" || body.Lang == "sass" {
-		// compile sass to css
-		body.Lang = "css"
-
-		filePath := fmt.Sprintf("%v/%v.%v", folderPath, sessionId, body.Lang)
-
-		cmd := exec.Command("sass", "--stdin", "--no-source-map", "--no-error-css", filePath)
-
-		cmd.Stdin = strings.NewReader(body.Content)
-
-		err = cmd.Run()
 		if err != nil {
 			log.Errorf("error running sass build command: %v", err)
 			w.WriteHeader(http.StatusInternalServerError)
 		}
 
-		writeMetadata(folderPath, Metadata{LastUpdated: time.Now()})
-
+	if body.Lang == "scss" || body.Lang == "sass" {
+		err = processSass(body, sessionId, folderPath)
+		if err != nil {
+			log.Error(err)
+		}
 		return
 	}
 
