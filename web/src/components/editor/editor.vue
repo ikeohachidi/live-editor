@@ -20,7 +20,7 @@ import { EditorView, basicSetup } from "codemirror"
 import { ViewUpdate } from '@codemirror/view';
 import { oneDark } from '@codemirror/theme-one-dark';
 
-export type EditorLanguage = 'css' | 'js' | 'html' | 'sass';
+export type EditorLanguage = 'css' | 'js' | 'html' | 'sass' | 'ts';
 
 const editorEl = ref<HTMLElement>();
 let editor: EditorView;

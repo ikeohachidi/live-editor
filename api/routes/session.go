@@ -66,6 +66,30 @@ func processSass(session Session, sessionId string, folderPath string) error {
 	return nil
 }
 
+func processTypescript(session Session, sessionId string, folderPath string) error {
+	filePath := fmt.Sprintf("%v/%v.js", folderPath, sessionId)
+	tsFilePath := fmt.Sprintf("%v/%v.ts", folderPath, sessionId)
+
+	// couldn't find a way to get typescript from stdin
+	// so we'll create the file, compile it, then delete it
+	err := os.WriteFile(tsFilePath, []byte(session.Content), 0777)
+	if err != nil {
+		return fmt.Errorf("error creating ts file: %v", err)
+	}
+
+	cmd := exec.Command("tsc", tsFilePath, "--outfile", filePath)
+	err = cmd.Run()
+	if err != nil {
+		os.Remove(tsFilePath)
+		return fmt.Errorf("error compiling ts file: %v", err)
+	}
+	os.Remove(tsFilePath)
+
+	writeMetadata(folderPath, Metadata{LastUpdated: time.Now()})
+
+	return nil
+}
+
 func UpdateSession(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Access-Control-Allow-Origin", "*")
 
@@ -86,10 +110,13 @@ func UpdateSession(w http.ResponseWriter, r *http.Request) {
 
 	folderPath := fmt.Sprintf("./session_files/%v", sessionId)
 
+	if body.Lang == "ts" {
+		err = processTypescript(body, sessionId, folderPath)
 		if err != nil {
-			log.Errorf("error running sass build command: %v", err)
-			w.WriteHeader(http.StatusInternalServerError)
+			log.Error(err)
 		}
+		return
+	}
 
 	if body.Lang == "scss" || body.Lang == "sass" {
 		err = processSass(body, sessionId, folderPath)

@@ -24,7 +24,8 @@
 						v-if="!isLoading"
 						:sessionId="sessionId"
 						v-model:content="jsContent"
-						language="js"
+						v-model:language="scriptLanguage"
+						:languageList="scriptLanguages"
 					/>
 				</ResizableBox>
 			</ResizableRow>
@@ -66,6 +67,18 @@ const styleLanguges: {label: string, value: EditorLanguage}[] = [
 	{
 		label: 'Css',
 		value: 'css'
+	}
+];
+
+const scriptLanguage = ref<EditorLanguage>('js');
+const scriptLanguages: {label: string, value: EditorLanguage}[] = [
+	{
+		label: 'Js',
+		value: 'js'
+	},
+	{
+		label: 'Ts',
+		value: 'ts'
 	}
 ];
 
