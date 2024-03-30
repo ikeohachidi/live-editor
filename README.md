@@ -12,6 +12,7 @@ Live editor is a web app that renders webpages in real-time(sort of). It's basic
 
 ### Known issues
 - Refreshing the page after writing Sass will return the compiled sass
+- Refreshing the page after writing Ts will return the compiled typescript
 - Resizing on the y axis downwards is janky, I've narrowed this down to the iframe used to render web pages.
 
 #### Why
