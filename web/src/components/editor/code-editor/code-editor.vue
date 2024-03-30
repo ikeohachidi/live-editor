@@ -18,7 +18,7 @@
 <script setup lang="ts">
 import { computed, watch } from 'vue';
 import Editor, { type EditorLanguage } from '../../editor/editor.vue';
-import { runUpdate } from '../../../http';
+import { runUpdate, updateSession } from '../../../http';
 
 const props = defineProps<{
     sessionId: string,
@@ -48,6 +48,10 @@ const codeLanguage = computed({
     set(value: EditorLanguage) {
         emits('update:language', value);
     }
+});
+
+watch(() => props.language, () => {
+    updateSession(props.sessionId, { content: codeContent.value, lang: props.language });
 });
 
 watch(codeContent, (content: string) => {
