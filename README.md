@@ -6,6 +6,7 @@ Live editor is a web app that renders webpages in real-time(sort of). It's basic
 - CSS
 - Sass
 - JavaScript
+- Typescript
 
 [CodeMirror](https://codemirror.net/docs/guide/) is doing the heavy lifting, code editing, syntax highlighting, etc.
 
