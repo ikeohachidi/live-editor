@@ -8,7 +8,6 @@
 <script setup lang="ts">
 import { onMounted } from 'vue';
 
-
 export interface Movement {
     direction: 'left' | 'right' | 'up' | 'down',
     change: number,
@@ -105,13 +104,11 @@ const onResizeMouseDown = (): void => {
 }
 
 const onResizeMouseUp = (): void => {
-    console.log('removing')
     window.removeEventListener('mousemove', resizeEvent);
 }
 
 onMounted(() => {
     window.addEventListener('mouseup', () => {
-        console.log('mouseup');
         onResizeMouseUp();
     })
 })
