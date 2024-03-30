@@ -17,7 +17,8 @@
 import { ref, onMounted, watch } from 'vue';
 import { Compartment, EditorState, Extension } from '@codemirror/state';
 import { EditorView, basicSetup } from "codemirror"
-import { ViewUpdate } from '@codemirror/view';
+import { ViewUpdate, keymap } from '@codemirror/view';
+import { indentWithTab } from "@codemirror/commands"
 import { oneDark } from '@codemirror/theme-one-dark';
 
 export type EditorLanguage = 'css' | 'js' | 'html' | 'sass' | 'ts';
@@ -88,6 +89,7 @@ onMounted(async() => {
 		extensions: [
 			basicSetup,
 			languages.of(extensions),
+			keymap.of([indentWithTab]),
 			EditorView.updateListener.of((view: ViewUpdate) => {
 				if (view.docChanged) {
 					const content = editor.state.doc.toString()
