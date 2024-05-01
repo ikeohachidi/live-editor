@@ -1,0 +1,7 @@
+http://locally.com {
+    reverse_proxy web:5173
+}
+
+http://api.locally.com {
+    reverse_proxy api:8000
+}

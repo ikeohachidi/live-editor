@@ -2,6 +2,7 @@ name: "live-editor"
 services:
   api:
     build: ./api
+    restart: "unless-stopped"
     ports:
       - 8000:8000
     volumes:
@@ -9,9 +10,23 @@ services:
 
   web:
     image: "node:alpine"
+    restart: "unless-stopped"
     command: sh -c "npm ci && npm run dev"
     working_dir: /web
+    environment:
+      VITE_API: http://api.locally.com
     ports:
       - 8001:5173
     volumes:
       - ./web:/web
+  server:
+    image: "caddy:alpine"
+    restart: "unless-stopped"
+    cap_add:
+      - NET_ADMIN
+    ports:
+      - "80:80"
+      - "443:443"
+      - "443:443/udp"
+    volumes:
+      - ./Caddyfile:/etc/caddy/Caddyfile
