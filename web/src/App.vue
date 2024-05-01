@@ -35,7 +35,7 @@
 						<iframe
 							:id="String(sessionId)"
 							class="live-preview"
-							:src="`http://localhost:8000/session/${sessionId}`"
+							:src="sessionURL"
 						></iframe>
 					</div>
 				</ResizableBox>
@@ -45,7 +45,7 @@
 </template>
 
 <script setup lang="ts">
-import { onMounted, ref } from 'vue';
+import { computed, onMounted, ref } from 'vue';
 import Resizable from './components/resizable/resizable.vue';
 import ResizableRow from './components/resizable-row/resizable-row.vue';
 import ResizableBox from './components/resizable-box/resizable-box.vue';
@@ -84,6 +84,10 @@ const scriptLanguages: {label: string, value: EditorLanguage}[] = [
 
 let sessionId: string;
 const isLoading = ref(false);
+
+const sessionURL = computed(() => {
+    return `${import.meta.env.VITE_API}/session/${sessionId}`;
+});
 
 onMounted(async() => {
 	isLoading.value = true;
