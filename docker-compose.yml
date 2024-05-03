@@ -30,3 +30,10 @@ services:
       - "443:443/udp"
     volumes:
       - ./Caddyfile:/etc/caddy/Caddyfile
+      - editor_caddy_data:/data
+      - editor_caddy_config:/config
+    
+volumes:
+  editor_caddy_data:
+    external: true
+  editor_caddy_config:
