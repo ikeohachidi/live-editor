@@ -1,7 +1,7 @@
-https://live-editor.ikeoha.xyz {
+live-editor.ikeoha.xyz {
     reverse_proxy web:5173
 }
 
-http://api.live-editor.ikeoha.xyz {
+api.live-editor.ikeoha.xyz {
     reverse_proxy api:8000
 }
