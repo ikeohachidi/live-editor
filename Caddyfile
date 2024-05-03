@@ -1,7 +1,7 @@
-http://locally.com {
+https://live-editor.ikeoha.xyz {
     reverse_proxy web:5173
 }
 
-http://api.locally.com {
+http://api.live-editor.ikeoha.xyz {
     reverse_proxy api:8000
 }
