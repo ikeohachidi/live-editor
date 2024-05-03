@@ -14,7 +14,7 @@ services:
     command: sh -c "npm ci && npm run dev"
     working_dir: /web
     environment:
-      VITE_API: http://api.locally.com
+      VITE_API: https://api.live-editor.ikeoha.xyz
     ports:
       - 8001:5173
     volumes:

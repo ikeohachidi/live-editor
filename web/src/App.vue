@@ -41,6 +41,12 @@
 				</ResizableBox>
 			</ResizableRow>
 		</Resizable>
+
+		<div class="links">
+			<span>
+				<a href="https://github.com/ikeohachidi/live-editor" target="_blank">Github</a>
+			</span>
+		</div>
 	</div>
 </template>
 
@@ -124,12 +130,16 @@ onMounted(async() => {
 </script>
 
 <style scoped>
-.wrapper {
-	display: flex;
-	justify-content: center;
-	align-items: center;
-	height: 100vh;
-	width: 100vw;
+.links {
+	position: fixed;
+	bottom: 0;
+	right: 0;
+	background-color: rgba(0, 0, 0, 0.5);
+	padding: 10px;
+
+	a {
+		color: #fff;
+	}
 }
 
 .live-preview {
