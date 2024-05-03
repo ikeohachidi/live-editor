@@ -11,6 +11,8 @@ services:
     image: "node:alpine"
     command: sh -c "npm ci && npm run dev"
     working_dir: /web
+    environment:
+      VITE_API: "http://localhost:8000"
     ports:
       - 8001:5173
     volumes:
