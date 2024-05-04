@@ -33,6 +33,7 @@
 				<ResizableBox>
 					<div class="live-preview-frame">
 						<iframe
+							v-if="sessionId"
 							:id="String(sessionId)"
 							class="live-preview"
 							:src="sessionURL"
@@ -88,24 +89,24 @@ const scriptLanguages: {label: string, value: EditorLanguage}[] = [
 	}
 ];
 
-let sessionId: string;
+let sessionId = ref('');
 const isLoading = ref(false);
 
 const sessionURL = computed(() => {
-    return `${import.meta.env.VITE_API}/session/${sessionId}`;
+    return `${import.meta.env.VITE_API}/session/${sessionId.value}`;
 });
 
 onMounted(async() => {
 	isLoading.value = true;
-	sessionId = localStorage.getItem(sessionIdStorageKey) || '';
+	sessionId.value = localStorage.getItem(sessionIdStorageKey) || '';
 
 	try {
-		if (sessionId) {
-			const { status, data } = await fetchSession(sessionId)
+		if (sessionId.value) {
+			const { status, data } = await fetchSession(sessionId.value)
 			if (status === 410) {
 				const newSession = await createNewSession();
 				localStorage.setItem(sessionIdStorageKey, String(newSession.sessionId));
-				sessionId = newSession.sessionId;
+				sessionId.value = newSession.sessionId;
 
 				return;
 			}
@@ -119,7 +120,7 @@ onMounted(async() => {
 
 		const newSession = await createNewSession();
 		localStorage.setItem(sessionIdStorageKey, String(newSession.sessionId));
-		sessionId = newSession.sessionId;
+		sessionId.value = newSession.sessionId;
 	} catch(e) {
 		// TODO: handle this properly
 		console.error(e);
