@@ -35,11 +35,20 @@ func StartSession(w http.ResponseWriter, r *http.Request) {
 
 	err := os.Mkdir(folderPath, 0777)
 	if err != nil {
-		log.Errorf("error creating folder: %v", err)
+		log.Errorf("error creating session folder: %v", err)
 		w.WriteHeader(http.StatusInternalServerError)
 		return
 	}
+
 	writeMetadata(folderPath, Metadata{LastUpdated: time.Now()})
+
+	file, err := os.Create(fmt.Sprintf("%v/%v.html", folderPath, sessionId))
+	if err != nil {
+		log.Errorf("error creating initial html: %v", err)
+		w.WriteHeader(http.StatusInternalServerError)
+		return
+	}
+	defer file.Close()
 
 	var newSession struct {
 		SessionId string `json:"sessionId"`
@@ -164,6 +173,7 @@ func FetchSession(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		log.Errorf("error reading file from storage: %v", err)
 		w.WriteHeader(http.StatusInternalServerError)
+		return
 	}
 	defer file.Close()
 
