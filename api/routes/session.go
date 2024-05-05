@@ -149,11 +149,11 @@ const htmlTemplate = `
 <!DOCTYPE html>
 <html>
     <head>
-		<link href="http://localhost:8000/f/%[1]v/%[1]v.css" rel="stylesheet"></link>
+		<link href="%[1]v/f/%[2]v/%[2]v.css" rel="stylesheet"></link>
 	</head>
     <body>
-		%[2]v
-		<script src="http://localhost:8000/f/%[1]v/%[1]v.js"></script>
+		%[3]v
+		<script src="%[1]v/f/%[2]v/%[2]v.js"></script>
     </body>
 </html>
 `
@@ -184,7 +184,7 @@ func FetchSession(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	page := fmt.Sprintf(htmlTemplate, sessionId, string(fileContent))
+	page := fmt.Sprintf(htmlTemplate, os.Getenv("WEB_CLIENT"), sessionId, string(fileContent))
 
 	w.Header().Set("Content-Type", "text/html")
 	w.Write([]byte(page))

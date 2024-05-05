@@ -4,6 +4,8 @@ services:
     build: ./api
     ports:
       - 8000:8000
+    environment:
+      WEB_CLIENT: "http://localhost:8001"
     volumes:
       - ./api:/api
 
