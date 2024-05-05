@@ -6,7 +6,7 @@ services:
     ports:
       - 8000:8000
     environment:
-      WEB_CLIENT: "https://live-editor.ikeoha.xyz"
+      API: "http://localhost:8000"
     volumes:
       - ./api:/api
 

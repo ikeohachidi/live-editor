@@ -184,7 +184,7 @@ func FetchSession(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	page := fmt.Sprintf(htmlTemplate, os.Getenv("WEB_CLIENT"), sessionId, string(fileContent))
+	page := fmt.Sprintf(htmlTemplate, os.Getenv("API"), sessionId, string(fileContent))
 
 	w.Header().Set("Content-Type", "text/html")
 	w.Write([]byte(page))
