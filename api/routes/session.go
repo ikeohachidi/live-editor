@@ -33,7 +33,7 @@ func StartSession(w http.ResponseWriter, r *http.Request) {
 
 	folderPath := fmt.Sprintf("./session_files/%v", sessionId)
 
-	err := os.Mkdir(folderPath, 0777)
+	err := os.MkdirAll(folderPath, 0777)
 	if err != nil {
 		log.Errorf("error creating session folder: %v", err)
 		w.WriteHeader(http.StatusInternalServerError)
