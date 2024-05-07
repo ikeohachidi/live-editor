@@ -1,27 +1,20 @@
-FROM ubuntu:20.04
+FROM node:20.11.1-alpine
 
-ENV NVM_VERSION 0.39.7
-ENV NODE_VERSION 20.11.1
 ENV GO_VERSION 1.22.1
-ENV NVM_DIR /root/.nvm
 
-SHELL ["/bin/bash", "-c"]
+RUN apk update && \
+    apk add --no-cache \
+    curl \
+    wget
 
-RUN apt update -y
-RUN apt install -y curl wget
-RUN wget -qO- https://raw.githubusercontent.com/nvm-sh/nvm/v${NVM_VERSION}/install.sh | bash \
-    && . $NVM_DIR/nvm.sh \
-    && nvm install ${NODE_VERSION} \
-    && nvm alias default ${NODE_VERSION} \
-    && npm install -g sass \
-    && npm install -g typescript 
+RUN npm install -g sass \
+    && npm install -g typescript
 
 # install go
 RUN wget https://go.dev/dl/go${GO_VERSION}.linux-amd64.tar.gz \
     && tar -C /usr/local -xzf go${GO_VERSION}.linux-amd64.tar.gz
 
 ENV PATH /usr/local/go/bin:$PATH
-ENV PATH $NVM_DIR/versions/node/v$NODE_VERSION/bin:$PATH
 
 EXPOSE 8000
 WORKDIR /api
