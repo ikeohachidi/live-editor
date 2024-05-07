@@ -1,5 +1,5 @@
 live-editor.ikeoha.xyz {
-    reverse_proxy web:5173
+    reverse_proxy web:8001
 }
 
 api.live-editor.ikeoha.xyz {
