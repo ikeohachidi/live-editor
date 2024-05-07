@@ -7,7 +7,7 @@ services:
     restart: "unless-stopped"
     working_dir: /api
     environment:
-      API: "http://api.live-editor.ikeoha.xyz"
+      API: "https://api.live-editor.ikeoha.xyz"
 
   web:
     build:
@@ -16,7 +16,7 @@ services:
     restart: "unless-stopped"
     working_dir: /web
     environment:
-      VITE_API: http://api.live-editor.ikeoha.xyz
+      VITE_API: https://api.live-editor.ikeoha.xyz
 
   server:
     image: "caddy:alpine"

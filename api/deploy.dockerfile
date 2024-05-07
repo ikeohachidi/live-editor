@@ -10,7 +10,7 @@ RUN go build -o live-editor-api
 FROM node:20.11.1-alpine
 
 ENV NODE_VERSION 20.11.1
-ENV API http://api.live-editor.ikeoha.xyz
+ENV API https://api.live-editor.ikeoha.xyz
 
 # Install necessary packages
 RUN apk update && \
