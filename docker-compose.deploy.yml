@@ -8,6 +8,9 @@ services:
     working_dir: /api
     environment:
       API: "https://api.live-editor.ikeoha.xyz"
+    ports:
+      - "8000:8000"
+
 
   web:
     build:
@@ -17,6 +20,8 @@ services:
     working_dir: /web
     environment:
       VITE_API: https://api.live-editor.ikeoha.xyz
+    ports:
+      - "8001:8001"
 
   server:
     image: "caddy:alpine"

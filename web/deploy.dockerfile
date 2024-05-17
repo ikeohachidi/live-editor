@@ -6,8 +6,9 @@ COPY . .
 
 ENV VITE_API https://api.live-editor.ikeoha.xyz
 
-RUN npm install -g serve \
-    && npm run build
+RUN npm install \
+    && npm run build \
+    && npm install -g serve
 
 EXPOSE 8001
 
