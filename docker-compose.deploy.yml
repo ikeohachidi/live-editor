@@ -16,10 +16,10 @@ services:
     build:
       context: './web'
       dockerfile: 'deploy.dockerfile'
+      args:
+        VITE_API: https://api.live-editor.ikeoha.xyz
     restart: "unless-stopped"
     working_dir: /web
-    environment:
-      VITE_API: https://api.live-editor.ikeoha.xyz
     ports:
       - "8001:8001"
 

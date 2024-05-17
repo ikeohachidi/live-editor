@@ -4,7 +4,7 @@ WORKDIR /web
 
 COPY . .
 
-ENV VITE_API https://api.live-editor.ikeoha.xyz
+ARG VITE_API https://api.live-editor.ikeoha.xyz
 
 RUN npm install \
     && npm run build \
